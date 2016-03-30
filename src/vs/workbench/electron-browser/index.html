@@ -18,6 +18,17 @@
 			var ipc = electron.ipcRenderer;
 			var windowId = remote.getCurrentWindow().id;
 
+			// Change cwd if given via env variable
+			try {
+				if (process.env.VSCODE_CWD_THREE) {
+					process.chdir(process.env.VSCODE_CWD_THREE);
+					console.log('chdir #3 to: ' + process.env.VSCODE_CWD_THREE);
+				}
+			} catch (err) {
+				console.error(err);
+				// noop
+			}
+
 			function onError(error, enableDeveloperTools) {
 				if (enableDeveloperTools) {
 					ipc.send('vscode:openDevTools', windowId);

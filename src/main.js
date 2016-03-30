@@ -99,8 +99,10 @@ function getNLSConfiguration() {
 try {
 	if (process.env.VSCODE_CWD) {
 		process.chdir(process.env.VSCODE_CWD);
+		console.log('chdir to: ' + process.env.VSCODE_CWD);
 	}
 } catch (err) {
+	console.error(err);
 	// noop
 }
 

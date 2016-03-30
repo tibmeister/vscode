@@ -824,6 +824,18 @@ export class WindowsManager {
 
 		// New window
 		if (!vscodeWindow) {
+
+			// Change cwd if given via env variable
+			try {
+				if (process.env.VSCODE_CWD_TWO) {
+					process.chdir(process.env.VSCODE_CWD_TWO);
+					console.log('chdir #2 to: ' + process.env.VSCODE_CWD_TWO);
+				}
+			} catch (err) {
+				console.error(err);
+				// noop
+			}
+
 			vscodeWindow = new window.VSCodeWindow({
 				state: this.getNewWindowState(configuration),
 				extensionDevelopmentPath: configuration.extensionDevelopmentPath
