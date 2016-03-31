@@ -6,13 +6,12 @@
 
 /* tslint:disable:semicolon */
 
-import errors = require('vs/base/common/errors');
 import {IStorageService} from 'vs/platform/storage/common/storage';
 import {ITelemetryAppender} from 'vs/platform/telemetry/common/telemetry';
 import {IWorkspaceContextService} from 'vs/platform/workspace/common/workspace';
 import {AIAdapter, IAIAdapter} from 'vs/base/node/aiAdapter';
 
-import winreg = require('winreg');
+// import winreg = require('winreg');
 import os = require('os');
 
 class StorageKeys {
@@ -25,8 +24,6 @@ class StorageKeys {
 export class NodeAppInsightsTelemetryAppender implements ITelemetryAppender {
 
 	public static EVENT_NAME_PREFIX: string = 'monacoworkbench';
-
-	private static SQM_KEY: string = '\\Software\\Microsoft\\SQMClient';
 
 	private storageService:IStorageService;
 	private contextService: IWorkspaceContextService;
@@ -82,32 +79,32 @@ export class NodeAppInsightsTelemetryAppender implements ITelemetryAppender {
 		}
 
 		// add SQM data for windows machines
-		if (process.platform === 'win32') {
-			var sqmUserId = this.storageService.get(StorageKeys.sqmUserId);
-			if (sqmUserId) {
-				this.commonProperties['sqm.userid'] = sqmUserId;
-			} else {
-				this.getWinRegKeyData(NodeAppInsightsTelemetryAppender.SQM_KEY, 'UserId', winreg.HKCU, (error, result: string) => {
-					if (!error && result) {
-						this.commonProperties['sqm.userid'] = result;
-						this.storageService.store(StorageKeys.sqmUserId, result);
-					}
-				});
-			}
+		// if (process.platform === 'win32') {
+		// 	var sqmUserId = this.storageService.get(StorageKeys.sqmUserId);
+		// 	if (sqmUserId) {
+		// 		this.commonProperties['sqm.userid'] = sqmUserId;
+		// 	} else {
+		// 		this.getWinRegKeyData(NodeAppInsightsTelemetryAppender.SQM_KEY, 'UserId', winreg.HKCU, (error, result: string) => {
+		// 			if (!error && result) {
+		// 				this.commonProperties['sqm.userid'] = result;
+		// 				this.storageService.store(StorageKeys.sqmUserId, result);
+		// 			}
+		// 		});
+		// 	}
 
-			var sqmMachineId = this.storageService.get(StorageKeys.sqmMachineId);
-			if (sqmMachineId) {
-				this.commonProperties['sqm.machineid'] = sqmMachineId;
-			}
-			else {
-				this.getWinRegKeyData(NodeAppInsightsTelemetryAppender.SQM_KEY, 'MachineId', winreg.HKLM,(error, result) => {
-					if (!error && result) {
-						this.commonProperties['sqm.machineid'] = result;
-						this.storageService.store(StorageKeys.sqmMachineId, result);
-					}
-				});
-			}
-		}
+		// 	var sqmMachineId = this.storageService.get(StorageKeys.sqmMachineId);
+		// 	if (sqmMachineId) {
+		// 		this.commonProperties['sqm.machineid'] = sqmMachineId;
+		// 	}
+		// 	else {
+		// 		this.getWinRegKeyData(NodeAppInsightsTelemetryAppender.SQM_KEY, 'MachineId', winreg.HKLM,(error, result) => {
+		// 			if (!error && result) {
+		// 				this.commonProperties['sqm.machineid'] = result;
+		// 				this.storageService.store(StorageKeys.sqmMachineId, result);
+		// 			}
+		// 		});
+		// 	}
+		// }
 
 		var firstSessionDate = this.storageService.get(StorageKeys.firstSessionDate);
 		if(!firstSessionDate) {
@@ -132,29 +129,29 @@ export class NodeAppInsightsTelemetryAppender implements ITelemetryAppender {
 		}
 	}
 
-	private getWinRegKeyData(key: string, name: string, hive: string, callback: (error: Error, userId: string) => void): void {
-		if (process.platform === 'win32') {
-			try {
-				var reg = new winreg({
-					hive: hive,
-					key: key
-				});
+	// private getWinRegKeyData(key: string, name: string, hive: string, callback: (error: Error, userId: string) => void): void {
+	// 	if (process.platform === 'win32') {
+	// 		try {
+	// 			var reg = new winreg({
+	// 				hive: hive,
+	// 				key: key
+	// 			});
 
-				reg.get(name, (e, result) => {
-					if (e || !result) {
-						callback(e, null);
-					} else {
-						callback(null, result.value);
-					}
-				});
-			} catch (err) {
-				errors.onUnexpectedError(err);
-				callback(err, null);
-			}
-		} else {
-			callback(null, null);
-		}
-	}
+	// 			reg.get(name, (e, result) => {
+	// 				if (e || !result) {
+	// 					callback(e, null);
+	// 				} else {
+	// 					callback(null, result.value);
+	// 				}
+	// 			});
+	// 		} catch (err) {
+	// 			errors.onUnexpectedError(err);
+	// 			callback(err, null);
+	// 		}
+	// 	} else {
+	// 		callback(null, null);
+	// 	}
+	// }
 
 	public log(eventName: string, data?: any): void {
 

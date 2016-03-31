@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import getmac = require('getmac');
-import crypto = require('crypto');
+// import getmac = require('getmac');
+// import crypto = require('crypto');
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as nls from 'vs/nls';
@@ -118,19 +118,19 @@ export class ElectronTelemetryService extends MainTelemetryService implements IT
 			return new TPromise((resolve, reject) => {
 				try {
 					// add a unique machine id as a hash of the macAddress
-					getmac.getMac((error, macAddress) => {
-						if (!error) {
-							// crypt machine id
-							machineId = crypto.createHash('sha256').update(macAddress, 'utf8').digest('hex');
-						} else {
-							// generate a UUID
-							machineId = uuid.generateUuid();
-						}
+					// getmac.getMac((error, macAddress) => {
+					// 	if (!error) {
+					// 		// crypt machine id
+					// 		machineId = crypto.createHash('sha256').update(macAddress, 'utf8').digest('hex');
+					// 	} else {
+					// 		// generate a UUID
+					// 		machineId = uuid.generateUuid();
+					// 	}
 
-						this.machineId = machineId;
-						this.storageService.store(StorageKeys.MachineId, machineId);
-						resolve(this.machineId);
-					});
+					// 	this.machineId = machineId;
+					// 	this.storageService.store(StorageKeys.MachineId, machineId);
+					// 	resolve(this.machineId);
+					// });
 				} catch (err) {
 					errors.onUnexpectedError(err);
 
