@@ -26,7 +26,6 @@ import {IModeService} from 'vs/editor/common/services/modeService';
 import {IUntitledEditorService} from 'vs/workbench/services/untitled/common/untitledEditorService';
 import {ResourceEditorInput} from 'vs/workbench/common/editor/resourceEditorInput';
 import {asWinJsPromise} from 'vs/base/common/async';
-import * as weak from 'weak';
 
 export interface IModelAddedData {
 	url: URI;
@@ -246,7 +245,7 @@ export class ExtHostDocumentData extends MirrorModel2 {
 	private _languageId: string;
 	private _isDirty: boolean;
 	private _textLines: vscode.TextLine[];
-	private _documentRef: weak.WeakRef & vscode.TextDocument;
+	private _documentRef: vscode.TextDocument;
 
 	constructor(proxy: MainThreadDocuments, uri: URI, lines: string[], eol: string,
 		languageId: string, versionId: number, isDirty: boolean) {
@@ -269,7 +268,7 @@ export class ExtHostDocumentData extends MirrorModel2 {
 		// document data. keeps a weak reference only such that
 		// we later when a document isn't needed anymore
 
-		if (!this.isDocumentReferenced) {
+		if (!this._documentRef) {
 			const data = this;
 			const doc = {
 				get uri() { return data._uri; },
@@ -288,13 +287,13 @@ export class ExtHostDocumentData extends MirrorModel2 {
 				validatePosition(pos) { return data.validatePosition(pos); },
 				getWordRangeAtPosition(pos) { return data.getWordRangeAtPosition(pos); }
 			};
-			this._documentRef = weak(doc);
+			this._documentRef = doc;
 		}
-		return weak.get(this._documentRef);
+		return this._documentRef;
 	}
 
 	get isDocumentReferenced(): boolean {
-		return this._documentRef && !weak.isDead(this._documentRef);
+		return !!this._documentRef;
 	}
 
 	_acceptLanguageId(newLanguageId: string): void {
